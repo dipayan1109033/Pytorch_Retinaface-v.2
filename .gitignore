@@ -1,3 +1,7 @@
 data/widerface/
 venv39/
 *.cpython-39.pyc
+
+weights/
+widerface_evaluate/widerface_txt/
+ground_truth/

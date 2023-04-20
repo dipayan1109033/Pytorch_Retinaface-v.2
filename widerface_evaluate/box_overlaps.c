@@ -1236,7 +1236,7 @@ typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
 
 /* "box_overlaps.pyx":13
  * 
- * DTYPE = np.float
+ * DTYPE = 'float'
  * ctypedef np.float_t DTYPE_t             # <<<<<<<<<<<<<<
  * 
  * def bbox_overlaps(
@@ -3926,7 +3926,6 @@ static CYTHON_SMALL_CODE int __pyx_pymod_exec_bbox(PyObject *__pyx_pyinit_module
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4047,17 +4046,11 @@ if (!__Pyx_RefNanny) {
   /* "box_overlaps.pyx":12
  * cimport numpy as np
  * 
- * DTYPE = np.float             # <<<<<<<<<<<<<<
+ * DTYPE = 'float'             # <<<<<<<<<<<<<<
  * ctypedef np.float_t DTYPE_t
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_float); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_DTYPE, __pyx_t_2) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_DTYPE, __pyx_n_s_float) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
 
   /* "box_overlaps.pyx":15
  * ctypedef np.float_t DTYPE_t
@@ -4066,20 +4059,20 @@ if (!__Pyx_RefNanny) {
  *         np.ndarray[DTYPE_t, ndim=2] boxes,
  *         np.ndarray[DTYPE_t, ndim=2] query_boxes):
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_4bbox_1bbox_overlaps, NULL, __pyx_n_s_bbox); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_bbox_overlaps, __pyx_t_2) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_4bbox_1bbox_overlaps, NULL, __pyx_n_s_bbox); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_bbox_overlaps, __pyx_t_1) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "box_overlaps.pyx":1
  * # --------------------------------------------------------             # <<<<<<<<<<<<<<
  * # Fast R-CNN
  * # Copyright (c) 2015 Microsoft
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "../venv39/lib/site-packages/numpy/__init__.pxd":1013
  * 
@@ -4094,7 +4087,6 @@ if (!__Pyx_RefNanny) {
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
       __Pyx_AddTraceback("init bbox", __pyx_clineno, __pyx_lineno, __pyx_filename);
