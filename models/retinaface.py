@@ -10,6 +10,19 @@ from models.net import FPN as FPN
 from models.net import SSH as SSH
 
 
+#-----CV-IOU
+# Define the IoU-Aware Head
+class IoUAwareHead(nn.Module):
+    def __init__(self, inchannels=512, num_anchors=3):
+        super(IoUAwareHead, self).__init__()
+        self.conv1x1_iou = nn.Conv2d(inchannels, num_anchors, kernel_size=(1, 1), stride=1, padding=0)
+
+    def forward(self, x):
+        iou_out = self.conv1x1_iou(x)
+        iou_out = iou_out.permute(0, 2, 3, 1).contiguous()
+        iou_out = iou_out.view(iou_out.shape[0], -1, 1)
+        return iou_out
+#-----CV-IOU
 
 class ClassHead(nn.Module):
     def __init__(self,inchannels=512,num_anchors=3):
@@ -85,6 +98,17 @@ class RetinaFace(nn.Module):
         self.ClassHead = self._make_class_head(fpn_num=3, inchannels=cfg['out_channel'])
         self.BboxHead = self._make_bbox_head(fpn_num=3, inchannels=cfg['out_channel'])
         self.LandmarkHead = self._make_landmark_head(fpn_num=3, inchannels=cfg['out_channel'])
+        #-----CV-IOU
+        self.IoUAwareHead = self._make_iou_aware_head(fpn_num=3, inchannels=cfg['out_channel'])
+        #-----CV-IOU
+
+    #-----CV-IOU
+    def _make_iou_aware_head(self, fpn_num=3, inchannels=64, anchor_num=2):
+        iouhead = nn.ModuleList()
+        for i in range(fpn_num):
+            iouhead.append(IoUAwareHead(inchannels, anchor_num))
+        return iouhead
+    #-----CV-IOU
 
     def _make_class_head(self,fpn_num=3,inchannels=64,anchor_num=2):
         classhead = nn.ModuleList()
@@ -116,12 +140,16 @@ class RetinaFace(nn.Module):
         feature3 = self.ssh3(fpn[2])
         features = [feature1, feature2, feature3]
 
+        #-----CV-IOU
+        iou_pred = torch.cat([self.IoUAwareHead[i](feature) for i, feature in enumerate(features)], dim=1)
+        #-----CV-IOU
+
         bbox_regressions = torch.cat([self.BboxHead[i](feature) for i, feature in enumerate(features)], dim=1)
         classifications = torch.cat([self.ClassHead[i](feature) for i, feature in enumerate(features)],dim=1)
         ldm_regressions = torch.cat([self.LandmarkHead[i](feature) for i, feature in enumerate(features)], dim=1)
 
         if self.phase == 'train':
-            output = (bbox_regressions, classifications, ldm_regressions)
+            output = (bbox_regressions, classifications, ldm_regressions, iou_pred)
         else:
-            output = (bbox_regressions, F.softmax(classifications, dim=-1), ldm_regressions)
+            output = (bbox_regressions, F.softmax(classifications, dim=-1), ldm_regressions, iou_pred)
         return output

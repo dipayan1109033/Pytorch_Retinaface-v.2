@@ -6,7 +6,7 @@ import torch.backends.cudnn as cudnn
 import argparse
 import torch.utils.data as data
 from data import WiderFaceDetection, detection_collate, preproc, cfg_mnet, cfg_re50
-from layers.modules import MultiBoxLoss
+from layers.modules import MultiBoxLoss, MultiBoxLossIOU
 from layers.functions.prior_box import PriorBox
 import time
 import datetime
@@ -15,7 +15,7 @@ from models.retinaface import RetinaFace
 
 parser = argparse.ArgumentParser(description='Retinaface Training')
 parser.add_argument('--training_dataset', default='./data/widerface/train/label.txt', help='Training dataset directory')
-parser.add_argument('--network', default='mobile0.25', help='Backbone network mobile0.25 or resnet50')
+parser.add_argument('--network', default='resnet50', help='Backbone network mobile0.25 or resnet50')
 parser.add_argument('--num_workers', default=4, type=int, help='Number of workers used in dataloading')
 parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
@@ -79,7 +79,11 @@ cudnn.benchmark = True
 
 
 optimizer = optim.SGD(net.parameters(), lr=initial_lr, momentum=momentum, weight_decay=weight_decay)
-criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False)
+
+#-----CV-IOU
+#criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False)
+criterion2 = MultiBoxLossIOU(num_classes, 0.35, True, 0, True, 7, 0.35, False)
+#-----CV-IOU
 
 priorbox = PriorBox(cfg, image_size=(img_dim, img_dim))
 with torch.no_grad():
@@ -127,8 +131,13 @@ def train():
 
         # backprop
         optimizer.zero_grad()
-        loss_l, loss_c, loss_landm = criterion(out, priors, targets)
-        loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm
+        #-----CV-IOU
+        #loss_l, loss_c, loss_landm= criterion(out, priors, targets)
+        #loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm 
+        #-----
+        loss_l, loss_c, loss_landm, loss_iou = criterion2(out, priors, targets)
+        loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm + loss_iou
+        #-----CV-IOU
         loss.backward()
         optimizer.step()
         load_t1 = time.time()
