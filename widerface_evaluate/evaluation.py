@@ -284,7 +284,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/00.base/")
+    parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/epoch10/")
     parser.add_argument('-g', '--gt', default='./widerface_evaluate/ground_truth/')
 
     args = parser.parse_args()
