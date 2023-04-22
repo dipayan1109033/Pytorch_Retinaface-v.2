@@ -92,7 +92,7 @@ def read_pred_file(filepath):
     boxes = []
     for line in lines:
         line = line.rstrip('\r\n').split(' ')
-        if line[0] is '':
+        if line[0] == '':
             continue
         # a = float(line[4])
         boxes.append([float(line[0]), float(line[1]), float(line[2]), float(line[3]), float(line[4])])
@@ -284,8 +284,8 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--pred', default="./widerface_txt/")
-    parser.add_argument('-g', '--gt', default='./ground_truth/')
+    parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/00.base/")
+    parser.add_argument('-g', '--gt', default='./widerface_evaluate/ground_truth/')
 
     args = parser.parse_args()
     evaluation(args.pred, args.gt)
