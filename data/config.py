@@ -21,7 +21,7 @@ cfg_mnet = {
 }
 
 cfg_re50 = {
-    'name': 'Resnet50',
+    'name': 'Resnet50-20',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],
@@ -30,7 +30,7 @@ cfg_re50 = {
     'gpu_train': True,
     'batch_size': 24,
     'ngpu': 4,
-    'epoch': 100,
+    'epoch': 20,
     'decay1': 70,
     'decay2': 90,
     'image_size': 840,
