@@ -233,6 +233,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     settings = ['easy', 'medium', 'hard']
     setting_gts = [easy_gt_list, medium_gt_list, hard_gt_list]
     aps = []
+    pr_cureves = []
     for setting_id in range(3):
         # different setting
         gt_list = setting_gts[setting_id]
@@ -267,6 +268,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 
                 pr_curve += _img_pr_info
         pr_curve = dataset_pr_info(thresh_num, pr_curve, count_face)
+        pr_cureves.append(pr_curve)
 
         propose = pr_curve[:, 0]
         recall = pr_curve[:, 1]
@@ -279,6 +281,10 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     print("Medium Val AP: {}".format(aps[1]))
     print("Hard   Val AP: {}".format(aps[2]))
     print("=================================================")
+
+    f = open("./widerface_evaluate/widerface_txt/data.pkl", 'wb')
+    pickle.dump(pr_cureves, f)
+    f.close()
 
 
 if __name__ == '__main__':

@@ -124,7 +124,7 @@ if __name__ == '__main__':
         scale = scale.to(device)
 
         _t['forward_pass'].tic()
-        loc, conf, landms = net(img)  # forward pass
+        loc, conf, landms, iou_data = net(img)  # forward pass
         _t['forward_pass'].toc()
         _t['misc'].tic()
         priorbox = PriorBox(cfg, image_size=(im_height, im_width))
