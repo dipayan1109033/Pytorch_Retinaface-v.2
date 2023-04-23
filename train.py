@@ -55,6 +55,33 @@ net = RetinaFace(cfg=cfg)
 print("Printing net...")
 print(net)
 
+
+def FreezeAll_exceptHeads(net):
+
+    # Set all layers to not require gradients
+    for param in net.parameters():
+        param.requires_grad = False
+
+
+    for class_head in net.ClassHead:
+        for param in class_head.parameters():
+            param.requires_grad = True
+
+    for bbox_head in net.BboxHead:
+        for param in bbox_head.parameters():
+            param.requires_grad = True
+
+    for landmark_head in net.LandmarkHead:
+        for param in landmark_head.parameters():
+            param.requires_grad = True
+
+    for iou_head in net.IoUAwareHead:
+        for param in iou_head.parameters():
+            param.requires_grad = True
+    return net
+
+
+
 if args.resume_net is not None:
     print('Loading resume network...')
     state_dict = torch.load(args.resume_net)
@@ -69,6 +96,8 @@ if args.resume_net is not None:
             name = k
         new_state_dict[name] = v
     net.load_state_dict(new_state_dict)
+
+net = FreezeAll_exceptHeads(net)
 
 if num_gpu > 1 and gpu_train:
     net = torch.nn.DataParallel(net).cuda()
