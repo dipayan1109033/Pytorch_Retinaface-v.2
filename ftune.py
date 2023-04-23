@@ -103,14 +103,22 @@ net = load_model(net, args.trained_model, args.cpu)
 for param in net.parameters():
     param.requires_grad = False
 
-# Set the last 10-20% layers to require gradients
-num_layers = len(list(net.children()))
-start_finetune_layer = int(0.8 * num_layers)  # Change 0.8 to adjust the percentage
 
-for i, child in enumerate(net.children()):
-    if i >= start_finetune_layer:
-        for param in child.parameters():
-            param.requires_grad = True
+for class_head in net.ClassHead:
+    for param in class_head.parameters():
+        param.requires_grad = True
+
+for bbox_head in net.BboxHead:
+    for param in bbox_head.parameters():
+        param.requires_grad = True
+
+for landmark_head in net.LandmarkHead:
+    for param in landmark_head.parameters():
+        param.requires_grad = True
+
+for iou_head in net.IoUAwareHead:
+    for param in iou_head.parameters():
+        param.requires_grad = True
 
  #-----CV-IOU     
  
@@ -205,9 +213,9 @@ def train():
         load_t1 = time.time()
         batch_time = load_t1 - load_t0
         eta = int(batch_time * (max_iter - iteration))
-        print('Epoch:{}/{} || Epochiter: {}/{} || Iter: {}/{} || Loc: {:.4f} Cla: {:.4f} Landm: {:.4f} || LR: {:.8f} || Batchtime: {:.4f} s || ETA: {}'
+        print('Epoch:{}/{} || Epochiter: {}/{} || Iter: {}/{} || Loc: {:.4f} Cla: {:.4f} Landm: {:.4f} iou: {:.4f}|| LR: {:.8f} || Batchtime: {:.4f} s || ETA: {}'
               .format(epoch, max_epoch, (iteration % epoch_size) + 1,
-              epoch_size, iteration + 1, max_iter, loss_l.item(), loss_c.item(), loss_landm.item(), lr, batch_time, str(datetime.timedelta(seconds=eta))))
+              epoch_size, iteration + 1, max_iter, loss_l.item(), loss_c.item(), loss_landm.item(), loss_iou.item(), lr, batch_time, str(datetime.timedelta(seconds=eta))))
 
     torch.save(net.state_dict(), save_folder + cfg['name'] + '_Final.pth')
     # torch.save(net.state_dict(), save_folder + 'Final_Retinaface.pth')
