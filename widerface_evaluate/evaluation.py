@@ -282,7 +282,8 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     print("Hard   Val AP: {}".format(aps[2]))
     print("=================================================")
 
-    f = open("./widerface_evaluate/pr_curves_data.pkl", 'wb')
+    #f = open("./widerface_evaluate/pr_curves_data.pkl", 'wb')
+    f = open("./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20.pkl", 'wb')
     pickle.dump(pr_cureves, f)
     f.close()
 
@@ -290,8 +291,8 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    #parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b10/")
-    parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/")
+    #parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/")
+    parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20/")
     parser.add_argument('-g', '--gt', default='./widerface_evaluate/ground_truth/')
 
     args = parser.parse_args()

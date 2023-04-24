@@ -52,6 +52,7 @@ training_dataset = args.training_dataset
 save_folder = args.save_folder
 
 net = RetinaFace(cfg=cfg)
+# net = load_model(net, args.trained_model, args.cpu)
 print("Printing net...")
 print(net)
 
@@ -80,7 +81,7 @@ def FreezeAll_exceptHeads(net):
             param.requires_grad = True
     return net
 
-
+# net = FreezeAll_exceptHeads(net)
 
 if args.resume_net is not None:
     print('Loading resume network...')
@@ -97,7 +98,6 @@ if args.resume_net is not None:
         new_state_dict[name] = v
     net.load_state_dict(new_state_dict)
 
-net = FreezeAll_exceptHeads(net)
 
 if num_gpu > 1 and gpu_train:
     net = torch.nn.DataParallel(net).cuda()
