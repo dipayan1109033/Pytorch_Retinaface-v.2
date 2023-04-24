@@ -221,5 +221,10 @@ if __name__ == '__main__':
 
     pred_dir = args.save_folder
     gr_dir = "'./widerface_evaluate/ground_truth/'"
-    filename = args.trained_model[10:-4] + ".pkl"
+    filename = "pickle_data/" + args.trained_model[10:-4] + ".pkl"
+
+    dirname = os.path.dirname(filename)
+    if not os.path.isdir(dirname):
+        os.makedirs(dirname)
+        
     evaluation(pred_dir, gr_dir, filename)
