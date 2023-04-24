@@ -11,6 +11,7 @@ import cv2
 from models.retinaface import RetinaFace
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
+from widerface_evaluate.evaluation import evaluation
 
 
 parser = argparse.ArgumentParser(description='Retinaface')
@@ -217,3 +218,8 @@ if __name__ == '__main__':
             name = "./results/" + str(i) + ".jpg"
             cv2.imwrite(name, img_raw)
 
+
+    pred_dir = args.save_folder
+    gr_dir = "'./widerface_evaluate/ground_truth/'"
+    filename = args.trained_model[10:-4] + ".pkl"
+    evaluation(pred_dir, gr_dir, filename)

@@ -224,7 +224,7 @@ def voc_ap(rec, prec):
     return ap
 
 
-def evaluation(pred, gt_path, iou_thresh=0.5):
+def evaluation(pred, gt_path, save_fileName="", iou_thresh=0.5):
     pred = get_preds(pred)
     norm_score(pred)
     facebox_list, event_list, file_list, hard_gt_list, medium_gt_list, easy_gt_list = get_gt_boxes(gt_path)
@@ -282,8 +282,8 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     print("Hard   Val AP: {}".format(aps[2]))
     print("=================================================")
 
-    #f = open("./widerface_evaluate/pr_curves_data.pkl", 'wb')
-    f = open("./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20.pkl", 'wb')
+    f = open("./widerface_evaluate/" + save_fileName, 'wb')
+    #f = open("./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20.pkl", 'wb')
     pickle.dump(pr_cureves, f)
     f.close()
 
@@ -294,9 +294,10 @@ if __name__ == '__main__':
     #parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/")
     parser.add_argument('-p', '--pred', default="./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20/")
     parser.add_argument('-g', '--gt', default='./widerface_evaluate/ground_truth/')
+    parser.add_argument('-s', '--save_filename', default='pr_curves_data.pkl')
 
     args = parser.parse_args()
-    evaluation(args.pred, args.gt)
+    evaluation(args.pred, args.gt, args.save_filename)
 
 
 
