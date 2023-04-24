@@ -224,7 +224,7 @@ def voc_ap(rec, prec):
     return ap
 
 
-def evaluation(pred, gt_path, save_fileName="", iou_thresh=0.5):
+def evaluation(pred, gt_path, save_filePath="", iou_thresh=0.5):
     pred = get_preds(pred)
     norm_score(pred)
     facebox_list, event_list, file_list, hard_gt_list, medium_gt_list, easy_gt_list = get_gt_boxes(gt_path)
@@ -282,7 +282,13 @@ def evaluation(pred, gt_path, save_fileName="", iou_thresh=0.5):
     print("Hard   Val AP: {}".format(aps[2]))
     print("=================================================")
 
-    f = open("./widerface_evaluate/" + save_fileName, 'wb')
+
+
+    dirname = os.path.dirname(save_filePath)
+    if not os.path.isdir(dirname):
+        os.makedirs(dirname)
+
+    f = open(save_filePath, 'wb')
     #f = open("./widerface_evaluate/widerface_txt/IoU-ftune_1Head_b20.pkl", 'wb')
     pickle.dump(pr_cureves, f)
     f.close()
