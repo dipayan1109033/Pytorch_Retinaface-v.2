@@ -2,44 +2,46 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import os
 
 cfg = {}
 cfg['loc_weight']= 2.0
 
 
+def voc_ap(rec, prec):
+    # correct AP calculation
+    # first append sentinel values at the end
+    mrec = np.concatenate(([0.], rec, [1.]))
+    mpre = np.concatenate(([0.], prec, [0.]))
+
+    # compute the precision envelope
+    for i in range(mpre.size - 1, 0, -1):
+        mpre[i - 1] = np.maximum(mpre[i - 1], mpre[i])
+
+    # to calculate area under PR curve, look for points
+    # where X axis (recall) changes value
+    i = np.where(mrec[1:] != mrec[:-1])[0]
+
+    # and sum (\Delta recall) * prec
+    ap = np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])
+    return ap
+
+
+def plot_pr_curve(pr_curve, set = "Easy"):
+    precision = pr_curve[:, 0]
+    recall = pr_curve[:, 1]
+    ap = voc_ap(recall, precision)
+    print(f"{set:6s} : {ap*100:0.4f} %")
+
+    # plot the precision-recall curve
+    plt.plot(recall, precision, lw=2)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title(f"PR Curve - {set} Set [AP={ap*100:0.2f}%]")
+    plt.grid()
+    
+
 def plot_pr_curves(pr_cureves):
-
-    def voc_ap(rec, prec):
-        # correct AP calculation
-        # first append sentinel values at the end
-        mrec = np.concatenate(([0.], rec, [1.]))
-        mpre = np.concatenate(([0.], prec, [0.]))
-
-        # compute the precision envelope
-        for i in range(mpre.size - 1, 0, -1):
-            mpre[i - 1] = np.maximum(mpre[i - 1], mpre[i])
-
-        # to calculate area under PR curve, look for points
-        # where X axis (recall) changes value
-        i = np.where(mrec[1:] != mrec[:-1])[0]
-
-        # and sum (\Delta recall) * prec
-        ap = np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])
-        return ap
-
-    def plot_pr_curve(pr_curve, set = "Easy"):
-        precision = pr_curve[:, 0]
-        recall = pr_curve[:, 1]
-        ap = voc_ap(recall, precision)
-        print(f"{set:6s} : {ap*100:0.4f} %")
-
-        # plot the precision-recall curve
-        plt.plot(recall, precision, lw=2)
-        plt.xlabel('Recall')
-        plt.ylabel('Precision')
-        plt.title('PR Curve' + " - " + set)
-        plt.grid()
-
     plt.figure(figsize=(6,4))
     sets = ["Easy", "Medium", "Hard"]
     for i in range(3):
@@ -48,61 +50,117 @@ def plot_pr_curves(pr_cureves):
     plt.legend(sets)
     plt.show()
 
+
+
+def plot_Evaluation_performance(dirpath, group_indx = 2):
+    sets = ["Easy", "Medium", "Hard"]
+    file_list = os.listdir(dirpath)
+    AP_list = []
+    for i in range(len(file_list)):
+        pr_filepath = dirpath + file_list[i]
+        with open(pr_filepath, 'rb') as fh:
+            pr_cureves = pickle.load(fh)
+            pr_curve = pr_cureves[group_indx]
+
+            precision = pr_curve[:, 0]
+            recall = pr_curve[:, 1]
+            ap = voc_ap(recall, precision)
+            AP_list.append(ap)
+    
+    print(AP_list)
+    x = np.arange(1, len(AP_list) + 1)
+    plt.plot(x, AP_list, '-o')
+    plt.xlabel('Epoches')
+    plt.ylabel('AP')
+    plt.title(f"Evaluation Performance [{sets[group_indx]} Set]")
+    plt.show()
+
+
+
 pr_filepath = "./widerface_evaluate/widerface_txt/data-IoU-b20.pkl"
 with open(pr_filepath, 'rb') as fh:
     pr_cureves = pickle.load(fh)
-    plot_pr_curves(pr_cureves)
+    #plot_pr_curves(pr_cureves)
+    #plot_pr_curve(pr_cureves[2], set = "Hard")
+    #plt.show()
+
+
+dirpath = "./widerface_evaluate/widerface_txt/pickle_data/resnet50_base_b100/"
+#plot_Evaluation_performance(dirpath, group_indx = 2)
 
 
 
-def plot_learning_curve(total_epochs, total_epochIter, lines):
-    indx = 0
-    loss_list = []
-    for i in range(total_epochs):
-        SUM = []
-        for iter in range(total_epochIter):
-            aline = lines[indx]
-            words = aline.split('||')
 
-            epoch = words[0].strip()
-            epoch = int(epoch[6:epoch.find("/")])
-            #print(epoch)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def plot_training_curve(lines):
+    total_lines = len(lines)
+    epochs_losses = []
+    
+    line_indx = 0
+    while line_indx < total_lines - 1:
+        aline = lines[line_indx]
+        words = aline.split('||')
+        word_epoch = words[0].strip()
+        initial_epochs = int(word_epoch[6:word_epoch.find("/")])
+        current_epochs = initial_epochs
+
+        lossSUM_list = []
+        while current_epochs == initial_epochs:
 
             losses = words[3].strip().split()
             loss_l, loss_c, loss_landm = float(losses[1]), float(losses[3]), float(losses[5])
             loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm
             if loss < np.inf:
-                SUM.append(loss)
-            #print(losses, loss)
+                lossSUM_list.append(loss)
+
+            
+            line_indx += 1
+            if line_indx == total_lines - 1: break
+
+            aline = lines[line_indx]
+            words = aline.split('||')
+            word_epoch = words[0].strip()
+            #print(word_epoch)
+            current_epochs = int(word_epoch[6:word_epoch.find("/")])
+        
+        avg_epoch_loss = sum(lossSUM_list)/len(lossSUM_list)
+        epochs_losses.append(avg_epoch_loss)
+
+    print(len(epochs_losses))
+    #print(epochs_losses)
+    plt.plot(epochs_losses)
+    plt.xlabel('Number of epoches')
+    plt.ylabel('Multi-task loss')
+    plt.title("Training loss")
+    plt.show()
             
 
-            indx += 1
-        loss_list.append(sum(SUM)/len(SUM))
-        #print(epoch, loss_list[-1])
-
-    #print(loss_list)
-    plt.plot(loss_list)
-    plt.xlabel('no. of epoches')
-    plt.ylabel('loss')
 
 
-train_filepath = "./widerface_evaluate/widerface_txt/train.o4597559"
+
+train_filepath = "./widerface_evaluate/widerface_txt/train_data/resnet50_base_b100/train.o4598961"
+#train_filepath = "./widerface_evaluate/widerface_txt/train_data/resnet50_IoU_b100/trainIoU.o4598964"
 with open(train_filepath, "r") as fh:
     lines = fh.readlines()
     print("Total lines:", len(lines))
     aline = lines[0]
-    print(aline)
+    print(aline[:-2])
 
-    words = aline.split('||')
-    epoch = words[0].strip()
-    total_epochs = int(epoch[epoch.find("/")+1:])
+    plot_training_curve(lines)
 
-    epochIter = words[1].strip()
-    total_epochIter = int(epochIter[epochIter.find("/")+1:])
-    #print("total_epochs:", total_epochs, "total_epochIter:", total_epochIter)
-
-    plot_learning_curve(total_epochs, total_epochIter, lines)
-    plt.show()
 
 
 
