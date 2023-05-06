@@ -30,8 +30,7 @@ def voc_ap(rec, prec):
 def plot_Evaluation_performance(dirpath, group_indx = 2):
     sets = ["Easy", "Medium", "Hard"]
     #file_list = os.listdir(dirpath)
-    file_list = ["Resnet50_epoch_" + str(epoch) + ".pkl" for epoch in [10, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100]]
-    #file_list = ["Resnet50_epoch_" + str(epoch) + ".pkl" for epoch in [10, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 101, 105, 110, 115, 120]]
+    file_list = ["mobilenet0.25_epoch_" + str(epoch) + ".pkl" for epoch in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]]
 
     AP_list = []
     for i in range(len(file_list)):
@@ -82,33 +81,33 @@ def plot_pr_curves(pr_cureves, ld_label="base"):
         
     #plt.show()
 
-pr_filepath = "./widerface_evaluate/widerface_txt/pickle_data/resnet50_base_b100/Resnet50_epoch_95.pkl"
+pr_filepath = "./widerface_evaluate/widerface_txt/pickle_data/mobilenet_base_b100/mobilenet0.25_epoch_80.pkl"
 with open(pr_filepath, 'rb') as fh:
     pr_cureves = pickle.load(fh)
-    #plot_pr_curves(pr_cureves, ld_label = "base")
+    plot_pr_curves(pr_cureves, ld_label = "base")
     #plot_pr_curve(pr_cureves[1], set = "Medium")
     #plt.show()
 
-pr_filepath = "./widerface_evaluate/widerface_txt/pickle_data/resnet50_IoU_b100/Resnet50_epoch_95.pkl"
+pr_filepath = "./widerface_evaluate/widerface_txt/pickle_data/mobilenet_IoU_b100/mobilenet0.25_epoch_80.pkl"
 with open(pr_filepath, 'rb') as fh:
     pr_cureves = pickle.load(fh)
-    #plot_pr_curves(pr_cureves, ld_label = "IoU")
+    plot_pr_curves(pr_cureves, ld_label = "IoU")
     #plot_pr_curve(pr_cureves[1], set = "Medium")
     
-    #plt.show()
+    plt.show()
 
 
-dirpath = "./widerface_evaluate/widerface_txt/pickle_data/resnet50_base_b100/"
+dirpath = "./widerface_evaluate/widerface_txt/pickle_data/mobilenet_base_b100/"
 #plot_Evaluation_performance(dirpath, group_indx = 0)
 #plot_Evaluation_performance(dirpath, group_indx = 1)
-plot_Evaluation_performance(dirpath, group_indx = 2)
+#plot_Evaluation_performance(dirpath, group_indx = 2)
 
-dirpath = "./widerface_evaluate/widerface_txt/pickle_data/resnet50_IoU_b100/"
-plot_Evaluation_performance(dirpath, group_indx = 2)
+dirpath = "./widerface_evaluate/widerface_txt/pickle_data/mobilenet_IoU_b100/"
+#plot_Evaluation_performance(dirpath, group_indx = 0)
 
 plt.legend(["base", "IoU"])
 plt.grid()
-plt.show()
+#plt.show()
 
 
 
