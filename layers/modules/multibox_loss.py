@@ -250,7 +250,7 @@ class MultiBoxLossIOU(nn.Module):
         # Remove extra dimension from the ground truth IOU tensor
         iou_t_pos = iou_t_pos.unsqueeze(1)
         #loss_iou1 = F.binary_cross_entropy(torch.sigmoid(iou_data_pos), iou_t_pos, reduction='sum')
-        loss_iou1 = F.mse_loss(torch.sigmoid(iou_data_pos), iou_t_pos, reduction='sum')
+        loss_iou1 = F.mse_loss(torch.sigmoid(iou_data_pos), iou_t_pos, reduction='mean')
         N2 = iou_data_pos.numel()
         loss_iou = loss_iou1 / N2
         #-----CV-IOU
